@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Mvc;
+using PartialsNExpandoApi.Extensions;
 using PartialsNExpandoApi.Products.Models;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
@@ -27,6 +28,45 @@ namespace PartialsNExpandoApi.Products
             var product = GetProducts().Where(x => x.Id == id);
             return new ObjectResult(product);
         }
+
+        [HttpGet]
+        [HttpGet("{id}/kv")]
+        public IActionResult GetKeyValuePairs(int id, string keys="")
+        {
+            var product = GetProducts().FirstOrDefault(x => x.Id == id);
+            List<KeyValuePair<string, object>> dictionary;
+
+            if (!string.IsNullOrEmpty(keys))
+            {
+                var arrKeys = keys.Split(',');
+                dictionary = product.AsDictionary().ToExpando().Where(x => arrKeys.Contains(x.Key)).ToList();
+            }
+            else
+            {
+                dictionary = product.AsDictionary().ToExpando().ToList();
+            }
+            return new ObjectResult(dictionary);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         private static List<Product> GetProducts()
         {
