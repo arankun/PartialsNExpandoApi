@@ -4,9 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
+using Microsoft.AspNet.Mvc;
+using Microsoft.AspNet.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace PartialsNExpandoApi
 {
@@ -27,7 +31,18 @@ namespace PartialsNExpandoApi
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
-            services.AddMvc();
+            // services.AddMvc(); // AT: this the default
+
+            services.AddMvc(options => {
+                                           var jsonOutputFormatter = new JsonOutputFormatter
+                                           {
+                                               SerializerSettings =
+                                               {
+                                                   ContractResolver = new CamelCasePropertyNamesContractResolver()
+                                               }
+                                           };
+                                           options.OutputFormatters.Insert(0, jsonOutputFormatter);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
